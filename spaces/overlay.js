@@ -2,16 +2,17 @@
 /* OVERLAY */
 
 //TODO: Document this
+//TODO: Add an icon showing `currentIndex/totalLength`
 
 setEventHandler ( 'spaceDidChange', () => {
 
-  if ( !spacesList || !spacesList.items ) return;
+  if ( !spacesListRaw || !spacesListRaw.items ) return;
 
   const space = Space.active (),
-        index = Space.all ().findIndex ( s => s.isEqual ( space ) );
+        index = getSpaceIndex ( space );
 
   if ( index === -1 ) return;
 
-  alert ( spacesList.items[index].title, undefined, SPACES_OVERLAY_DURATION );
+  alert ( spacesListRaw.items[index].title, undefined, SPACES_OVERLAY_DURATION );
 
 });

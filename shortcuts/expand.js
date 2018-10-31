@@ -26,12 +26,38 @@ setHandler ( 'm', HYPER, () => {
 
     expansionCache[hash] = currFrame;
 
+    const nextFrame = {
+      x: sFrame.x,
+      y: sFrame.y,
+      width: sFrame.width,
+      height: sFrame.height
+    };
+
+    window.setFrame ( nextFrame );
+
   } else {
 
     delete expansionCache[hash];
 
-  }
+    if ( prevFrame ) {
 
-  window.setFrame ( nextFrame );
+      window.setFrame ( prevFrame );
+
+    } else {
+
+      const nextFrame = {
+        x: sFrame.x,
+        y: sFrame.y,
+        width: CENTER_WIDTH,
+        height: CENTER_HEIGHT
+      };
+
+      window.setFrame ( nextFrame );
+
+      center_window ( window );
+
+    }
+
+  }
 
 });

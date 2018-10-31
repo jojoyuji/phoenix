@@ -1,28 +1,26 @@
 
 /* INIT */
 
-//TODO: Handle space addition/removal
+let spacesListRaw,
+    spacesList,
+    spacesListScreenHash;
 
-let spacesList;
+readListRaw ( () => {
 
-readList ( () => {
+  updateSpacesLists ();
 
-  updateSpaces ();
-
-  setEventHandler ( 'spaceDidChange', () => updateSpace () );
+  setEventHandler ( 'spaceDidChange', updateSpacesLists );
   setEventsHandler ( ['windowDidOpen', 'windowDidClose'], updateWindow );
 
 });
 
 /* LIST */
 
-function readList ( callback = _.noop ) {
+function readListRaw ( callback = _.noop ) {
 
-  readFile ( '~/.config/phoenix/spaces/list.json', content => {
+  readJSON ( SPACES_LIST_RAW_PATH, { items: [] }, obj => {
 
-    const parsed = _.attempt ( JSON.parse, content );
-
-    spacesList = _.isError ( parsed ) ? {} : parsed;
+    spacesListRaw = obj;
 
     callback ();
 
@@ -30,14 +28,21 @@ function readList ( callback = _.noop ) {
 
 }
 
+function writeListRaw ( callback = _.noop ) {
+
+  writeJSON ( SPACES_LIST_RAW_PATH, spacesListRaw, callback );
+
+}
+
 function writeList ( callback = _.noop ) {
 
-  if ( !spacesList ) return;
+  const screen_hash = Screen.main ().hash ();
 
-  const str = JSON.stringify ( spacesList, undefined, JSON_INDENTATION ) || '{}',
-        content = str.replace ( "'", "\\'" );
+  spacesList = _.cloneDeep ( spacesListRaw );
 
-  writeFile ( '~/.config/phoenix/spaces/list.json', content, callback );
+  spacesList.items = spacesList.items.filter ( item => item.screens_hashes.includes ( screen_hash ) );
+
+  writeJSON ( SPACES_LIST_PATH, spacesList, callback );
 
 }
 
@@ -75,38 +80,66 @@ function updateSpaceCycle ( iteration = cycleIteration, interval = SPACES_UPDATE
 
 }
 
-function updateSpaces () {
+function updateSpacesListRaw () {
 
-  const spaces = Space.all ();
-
-  if ( spacesList.items && spacesList.items.length === spaces.length ) return;
-
-  spacesList.items = [];
-
-  spaces.forEach ( ( space, index ) => updateSpace ( space, index, true, false ) );
-
-  writeList ( spacesList );
+  updateSpaces ();
+  updateSpace ();
 
 }
 
-function updateSpace ( space, index, force = false, write = true ) {
+function updateSpacesList () {
+
+  writeList ();
+
+}
+
+function updateSpacesLists () {
+
+  updateSpacesListRaw ();
+  updateSpacesList ();
+
+}
+
+function updateSpaces () {
+
+  const spaces = Space.all (),
+        list = {};
+
+  list.items = spaces.map ( ( space, index ) => {
+
+    const space_hash = space.hash (),
+          screens = space.screens (),
+          prevItem = spacesListRaw.items.find ( item => item.space_hash === space_hash );
+
+    return prevItem || getSpaceItem ( space, index, screens );
+
+  });
+
+  if ( _.isEqual ( list, spacesListRaw ) ) return;
+
+  spacesListRaw = list;
+
+  writeListRaw ();
+
+}
+
+function updateSpace ( space, index, screens ) {
 
   if ( !space ) space = Space.active ();
 
-  if ( !force && !Space.active ().isEqual ( space ) ) return false; // We can't get windows from inactive spaces
+  if ( !screens ) screens = space.screens ();
 
-  if ( _.isUndefined ( index ) ) index = Space.all ().findIndex ( s => s.isEqual ( space ) );
+  if ( !Space.active ().isEqual ( space ) ) return false; // We can't get windows from inactive spaces
 
-  const item = {
-    title: guessSpaceName ( space, index ),
-    arg: index2keycode ( index )
-  };
+  if ( _.isUndefined ( index ) ) index = getSpaceIndex ( space );
 
-  if ( _.isEqual ( spacesList.items[index], item ) ) return false;
+  const item = getSpaceItem ( space, index, screens );
 
-  spacesList.items[index] = item;
+  if ( _.isEqual ( spacesListRaw.items[index], item ) ) return false;
 
-  if ( write ) writeList ();
+  spacesListRaw.items[index] = item;
+
+  writeListRaw ();
 
   return true;
 
@@ -114,35 +147,21 @@ function updateSpace ( space, index, force = false, write = true ) {
 
 function updateWindow ( window ) {
 
+  if ( !window.isNormal () ) return;
+
   updateSpaceCycle ( 0 ); // It may take a bit for the window's title to get updated
 
 }
 
-/* HELPERS */
+/* GET */
 
-function index2keycode ( index ) {
+function getSpaceItem ( space, index, screens ) {
 
-  const keycodes = [18, 19, 20, 21, 23, 22, 26, 28, 25], // Corresponding to numbers from 1 to 9
-        keycode = keycodes[index];
-
-  return keycode ? `${keycode}` : ''; // Alfred wants a string, not a number
-
-}
-
-function guessSpaceName ( space, index ) {
-
-  // if ( !index ) return 'Home';
-
-  const vscode = space.windows ().find ( window => /Code/.test ( window.app ().name () ) );
-
-  if ( vscode ) {
-
-    const title = vscode.title ();
-
-    return _.last ( title.split ( ' — ' ) );
-
-  }
-
-  return index ? `Space ${index + 1}` : 'Home';
+  return {
+    title: getSpaceName ( space, index ),
+    arg: index2keycode ( index ),
+    space_hash: space.hash (),
+    screens_hashes: screens.map ( screen => screen.hash () )
+  };
 
 }

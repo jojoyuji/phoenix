@@ -77,6 +77,21 @@ Don't forget to make a PR if you fixed something or implemented something cool :
 | <kbd>⇪ + 2</kbd> | Move window to the 2nd column |
 | <kbd>⇪ + 3</kbd> | Move window to the 3rd column |
 
+### Sixths
+
+<p align="center">
+	<img src="resources/sixths.gif" alt="Sixths" style="width:690px">
+</p>
+
+| Shortcut | Description |
+| -------- | ----------- |
+| <kbd>⇪ + shift + Q</kbd> | Move window to the 1st sixth |
+| <kbd>⇪ + shift + W</kbd> | Move window to the 2nd sixth |
+| <kbd>⇪ + shift + E</kbd> | Move window to the 3rd sixth |
+| <kbd>⇪ + shift + A</kbd> | Move window to the 4th sixth |
+| <kbd>⇪ + shift + S</kbd> | Move window to the 5th sixth |
+| <kbd>⇪ + shift + D</kbd> | Move window to the 6th sixth |
+
 ### Center
 
 <p align="center">
@@ -121,12 +136,28 @@ Don't forget to make a PR if you fixed something or implemented something cool :
 | Shortcut | Description |
 | -------- | ----------- |
 | <kbd>⇪ + `</kbd> | Focus to or open [Noty](https://github.com/fabiospampinato/noty)|
-| <kbd>⇪ + C</kbd> | Focus to or open Chrome|
-| <kbd>⇪ + D</kbd> | Focus to or open Chrome Developer Tools|
-| <kbd>⇪ + V</kbd> | Focus to or open Visual Studio Code|
+| <kbd>⇪ + C</kbd> | Focus to or open [Chrome](https://www.google.com/chrome)|
+| <kbd>⇪ + D</kbd> | Focus to or open [Chrome Developer Tools](https://developer.chrome.com/devtools)|
+| <kbd>⇪ + V</kbd> | Focus to or open [Visual Studio Code](https://code.visualstudio.com)|
 | <kbd>⇪ + F</kbd> | Focus to or open Finder|
 | <kbd>⇪ + T</kbd> | Focus to or open [Hyper](https://github.com/zeit/hyper)|
 | <kbd>⇪ + G</kbd> | Focus to or open [GitTower](https://www.git-tower.com/)|
+| <kbd>⇪ + Z</kbd> | Focus to or open [Franz](https://meetfranz.com)|
+
+### Spaces
+
+<p align="center">
+	<img src="resources/spaces.gif" alt="Spaces" style="width:690px">
+</p>
+
+In order to make this work you have to open `System Preferences -> Keyboard -> Shortcuts -> Mission Control` and bind all `Switch to Desktop [NUMBER]` actions to <kbd>ctrl + alt + cmd + shift + [NUMBER]</kbd>. There are actions up to the 9th desktop, but they may not be shown to you if you have less then 9 desktops currently open.
+
+**Note**: If you don't need wrapping support, you should just remap the `Move left/right a space` actions under `System Preferences -> Keyboard -> Shortcuts -> Mission Control`.
+
+| Shortcut | Description |
+| -------- | ----------- |
+| <kbd>⇪ + tab</kbd> | Switch to the next space |
+| <kbd>⇪ + shift + tab </kbd> | Switch to the previous space |
 
 ### Applications Icons
 
@@ -148,7 +179,15 @@ Don't forget to make a PR if you fixed something or implemented something cool :
 | -------- | ----------- |
 | <kbd>⇪ + shift + P</kbd> | Reload Phoenix |
 
-### Quit
+### Pause/Resume Application
+
+This can be used for saving battery, pausing single-player games etc.
+
+| Shortcut | Description |
+| -------- | ----------- |
+| <kbd>⇪ + F8</kbd> | Pause or resume the current application |
+
+### Quit Application
 
 Did you ever close 3+ Chrome windows instead of a single tab by mistake? Fear no more! Now in order to quit an app you have to trigger <kbd>⌘Q</kbd> twice in a short timeframe. Stop [wasting 10$](https://clickontyler.com/commandq) for something so basic.
 
@@ -187,7 +226,7 @@ If it gets opened, positionate it to the right side.
 ## Space Switcher
 
 <p align="center">
-	<img src="resources/spaces.gif" alt="Space Switcher" style="width:690px">
+	<img src="resources/spaces_switcher.gif" alt="Space Switcher" style="width:690px">
 </p>
 
 This is the truly great addition to what was already available on the internet.
@@ -196,18 +235,16 @@ It combines [Phoenix](https://github.com/kasper/phoenix), [Alfred](https://www.a
 
 This is how it works:
 - It uses Phoenix to compile a list of your spaces
-- It tries to guess a name for those spaces, by default that would be the name of the folder opened in the Visual Studio Code instance present in that space
+- It tries to guess a name for those spaces, by default that would be the name of the folder opened in the Visual Studio Code instance present in that space ([get_space_name.js](https://github.com/fabiospampinato/phoenix/blob/master/helpers/get_space_name.js))
 - Refreshes the list and those guessed names when necessary
 - Listens for the double Hyper (<kbd>⇪</kbd> <kbd>⇪</kbd>) shortcut
-- Opens Alfred and triggers alfred-spaces-workflow
+- Opens [Alfred](https://www.alfredapp.com) and triggers [alfred-spaces-workflow](https://github.com/fabiospampinato/alfred-spaces-workflow)
 - Which reads the list of spaces compiled with Phoenix and displays it to you
-- Select a space to switch to
+- Now just select a space to switch to
 
-In order to make this wizardry work you have to open `System Preferences -> Keyboard -> Shortcuts -> Mission Control` and bind all `Switch to Desktop [NUMBER]` actions to <kbd>ctrl + alt + cmd + shift + [NUMBER]</kbd>. There are actions up to the 9th desktop, but they may not be shown to you if you have less then 9 desktops currently open.
+In order to make this work you have to open `System Preferences -> Keyboard -> Shortcuts -> Mission Control` and bind all `Switch to Desktop [NUMBER]` actions to <kbd>ctrl + alt + cmd + shift + [NUMBER]</kbd>. There are actions up to the 9th desktop, but they may not be shown to you if you have less then 9 desktops currently open.
 
-Limitations:
-- There's no API available for retrieving windows from other spaces, therefor other spaces' guessed names won't be refreshed until you visit them. The very first time you load Phoenix you might want to switch the focus to all of them, one by one, to have their names updated.
-- There's no API for detecting when a space gets added, deleted or rearranged. In case you do any of these things you may want to reload Phoenix (<kbd>⇪ + shift + P</kbd>). This will be worked around in a future commit.
+**Note**: There's no API available for retrieving windows from other spaces, therefor other spaces' guessed names won't be refreshed until you visit them. The very first time you load Phoenix you might want to switch the focus to all of them, one by one, to have their names updated.
 
 ## License
 
