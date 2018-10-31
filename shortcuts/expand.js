@@ -3,7 +3,7 @@
 
 const expansionCache = {};
 
-setHandler ( 'space', HYPER, () => {
+setHandler ( 'm', HYPER, () => {
 
   const window = Window.focused ();
 
@@ -18,8 +18,8 @@ setHandler ( 'space', HYPER, () => {
         nextFrame = expanding ? {
           x: 0,
           y: 0,
-          width: 1000000,
-          height: 1000000
+          width: 2000,
+          height: 2000
         } : prevFrame;
 
   if ( expanding ) {
